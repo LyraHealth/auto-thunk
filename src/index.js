@@ -27,14 +27,14 @@ const createThunk = (config, data) => {
   if (Array.isArray(data)) {
     data = { request: data }
   }
-  if (!data.request) {
+  if (data.type !== undefined && data.type !== null) {
     return data
   }
   let body = data.request[2]
   if (body && data.bodyType === 'formData') {
     let formData = new FormData()
-    Object.entries(body)(([value, key]) => {
-      if (!value === undefined && !value === null) {
+    Object.entries(body).map(([value, key]) => {
+      if (value !== undefined && value !== null) {
         formData.append(key, value)
       }
     })

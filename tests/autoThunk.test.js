@@ -1,6 +1,5 @@
-import autoThunkMiddleware from './autoRedux'
+import autoThunkMiddleware from '../src/index'
 import axios from 'axios'
-import { reducer as form } from 'redux-form'
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 
 const fooReducer = (state = { data: [] }, action) => {
@@ -32,7 +31,7 @@ let store, httpClient
 beforeEach(() => {
   httpClient = axios.create()
   const autoThunk = autoThunkMiddleware({ httpClient })
-  store = createStore(combineReducers({ form, fooReducer }), {}, applyMiddleware(autoThunk))
+  store = createStore(combineReducers({ fooReducer }), {}, applyMiddleware(autoThunk))
 })
 
 const addFoo = data => ({ type: 'ADD_FOO', data })

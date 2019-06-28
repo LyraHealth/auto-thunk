@@ -1,0 +1,22 @@
+{
+  "name": "auto-thunk",
+  "version": "1.0.0",
+  "license": "MIT",
+  "description": "Enhanced thunk middleware for Redux.",
+  "repository": "github:LyraHealth/auto-thunk",
+  "bugs": "https://github.com/LyraHealth/auto-thunk/issues",
+  "homepage": "https://github.com/LyraHealth/auto-thunk",
+  "keywords": [
+    "autoThunk",
+    "auto-thunk",
+    "thunk",
+    "middleware",
+    "redux-middleware",
+    "flux"
+  ],
+  "author": "Yvan Gadeau (yvan.gadeau@gmail.com)",
+  "main": "lib/index.js",
+  "files": [
+    "lib"
+  ]
+}

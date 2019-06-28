@@ -63,7 +63,7 @@ const createThunk = (config, data) => {
 
 export default function autoThunkMiddleware (config, extraArgument) {
   if (typeof config !== 'object' || typeof config.httpClient !== 'function') {
-    console.error('You must provide xhr handler instance to be able to make xhr requests. Supported libs are: axios.js')
+    console.error('You must provide an http client to be able to make xhr requests. Supported libs are: axios.js')
     return
   }
 

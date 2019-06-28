@@ -24,6 +24,9 @@ const createThunk = (config, data) => {
   if (typeof data === 'function') {
     return data
   }
+  if (Array.isArray(data)) {
+    data = { request: data }
+  }
   if (!data.request) {
     return data
   }

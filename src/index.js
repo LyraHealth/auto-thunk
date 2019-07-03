@@ -11,7 +11,7 @@ const getErrorText = statusCode => {
   return defaultErrorMessages[statusCode]
 }
 
-const defaultActionErrorHandler = error => {
+const defaulterrorHandler = error => {
   if (!error || !error.response) {
     let error = 'An unknown error has occured'
     throw error
@@ -45,10 +45,10 @@ const createThunk = (config, data) => {
     try {
       const res = await config.httpClient[data.request[0]](data.request[1], body)
       if (data.log) {
-        config.log(data.log.identifier, data.log.data || res.data)
+        config.log(data.log, res.data)
       }
       if (data.track) {
-        config.track(data.track.success)
+        config.track(data.track)
       }
       if (!data.action) return res.data
       const actionsArray = Array.isArray(data.action) ? data.action : [data.action]
@@ -62,11 +62,13 @@ const createThunk = (config, data) => {
       })
       return res.data
     } catch (error) {
-      if (data.track) {
-        const trackerObj = { ...data.track.failure, properties: { status: error.response.status, message: error.response.data.message } }
-        config.track(trackerObj)
+      if (error.response) {
+        if (data.log) {
+          config.log(data.log, error.response)
+        }
       }
-      config.actionErrorHandler(error, dispatch, data.action)
+      const errorHandler = data.errorHandler ? data.errorHandler : config.errorHandler
+      errorHandler(error, dispatch, data.action)
     }
   }
 }
@@ -79,11 +81,11 @@ export default function autoThunkMiddleware (config, extraArgument) {
 
   config = {
     httpClient: config.httpClient,
-    actionErrorHandler: config.actionErrorHandler || defaultActionErrorHandler,
+    errorHandler: config.errorHandler || defaulterrorHandler,
     track: config.track || (() => {}),
     log: config.log || (() => {})
   }
-  return ({ dispatch, getState }) => next => action => {
+  return ({ dispatch, getState, ...rest }) => next => action => {
     action = createThunk(config, action)
     if (typeof action === 'function') {
       return action(dispatch, getState, extraArgument)

@@ -14,15 +14,14 @@ const fooReducer = (state = { data: [] }, action) => {
       return state
     case 'DELETE_FOO':
       state.data = state.data.filter(foo => foo.id !== action.data.id)
+      state.extraProp = action.extraProp
       return state
     case 'ADD_FOOS':
       state.data = [...state.data, ...action.data]
       return state
-    case 'SET_VERSION':
-      state.version = action.data
-      return state
     case 'SET_UPDATED_FOO':
       state.lastUpdatedFoo = action.data
+      state.version = action.version
     default:
       return state
   }
@@ -45,14 +44,14 @@ const mockedData = {
     params: { id: '4' }
   },
   updateFooColor: {
-    response: { name: 'foo4', id: '5', color: 'testColor', version: '12' },
+    response: { name: 'foo4', id: '5', color: 'testColor' },
     params: { name: 'test', color: 'testColor', id: '5' }
   }
 }
 
 const expectedReducerData = {
   createFoo: { data: [{ name: 'foo3', color: 'testColor', id: '3' }] },
-  deleteFoo: { data: [] },
+  deleteFoo: { data: [], extraProp: 'test' },
   getFoos: { data: mockedData.getFoos.response },
   updateFooColor: { data: [], version: 'v2', lastUpdatedFoo: mockedData.updateFooColor.response },
   getStuff: { data: [] }
@@ -97,16 +96,15 @@ const createFoo = ({ name, color }) => ({
 })
 
 const deleteFoo = ({ id }) => ({
-  action: { type: 'DELETE_FOO', data: { id } },
+  action: { type: 'DELETE_FOO', data: id, extraProp: 'test' },
   request: ['delete', `/foos/${id}`]
 })
 
 // Make a request and dispatch several actions
 const updateFooColor = ({ color, name, id }) => ({
   action: [
-    'SET_UPDATED_FOO',
+    { type: 'SET_UPDATED_FOO', version: 'v2' },
     { type: 'UPDATE_FOO_COLOR', data: { color } },
-    { type: 'SET_VERSION', data: 'v2' }
   ],
   request: ['put', `/foos/${id}`, { color, name }]
 })

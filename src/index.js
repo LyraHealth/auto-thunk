@@ -52,7 +52,14 @@ const createThunk = (config, data) => {
       }
       if (!data.action) return res.data
       const actionsArray = Array.isArray(data.action) ? data.action : [data.action]
-      actionsArray.forEach(action => dispatch(typeof action === 'string' ? { type: action, data: res.data } : action))
+      actionsArray.forEach(action => {
+        if (typeof action === 'string') {
+          action = { type: action, data: res.data }
+        } else if (typeof action === 'object' && [undefined, null].includes(action.data)) {
+          action = {...action, data: res.data}
+        }
+        dispatch(action)
+      })
       return res.data
     } catch (error) {
       if (data.track) {

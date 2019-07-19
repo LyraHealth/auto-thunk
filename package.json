@@ -1,10 +1,15 @@
 {
-  "name": "auto-thunk",
+  "name": "@lyrahealth-inc/auto-thunk",
   "version": "1.0.0",
   "license": "MIT",
   "description": "Enhanced thunk middleware for Redux.",
-  "repository": "github:LyraHealth/auto-thunk",
-  "bugs": "https://github.com/LyraHealth/auto-thunk/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LyraHealth/auto-thunk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LyraHealth/auto-thunk/issues"
+  },
   "homepage": "https://github.com/LyraHealth/auto-thunk",
   "keywords": [
     "autoThunk",
@@ -28,5 +33,9 @@
     "babel-jest": "^24.8.0",
     "jest": "^24.8.0",
     "redux": "^4.0.1"
-  }
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {}
 }

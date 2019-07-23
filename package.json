@@ -20,9 +20,9 @@
     "flux"
   ],
   "author": "Yvan Gadeau (yvan.gadeau@gmail.com)",
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "files": [
-    "lib"
+    "src"
   ],
   "scripts": {
     "test": "jest"

@@ -43,7 +43,12 @@ const createThunk = (config, data) => {
 
   return async dispatch => {
     try {
-      const res = await config.httpClient[data.request[0]](data.request[1], body)
+      const res = await config.httpClient.request({
+        method: data.request[0],
+        url: data.request[1],
+        data: body,
+        cancelToken: data.cancelToken
+      })
       if (data.log) {
         config.log(data.log, res.data)
       }

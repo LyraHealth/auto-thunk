@@ -32,6 +32,10 @@ const mockedData = {
     response: {name: 'myStuff'},
     params: { id: '1' }
   },
+  getOtherStuff: {
+    response: {name: 'myStuff'},
+    params: { id: '11' }
+  },
   getFoos: {
     response: [{ name: 'foo1', id: '1' }, { name: 'foo2', id: '2' }]
   },
@@ -54,21 +58,49 @@ const expectedReducerData = {
   deleteFoo: { data: [], extraProp: 'test' },
   getFoos: { data: mockedData.getFoos.response },
   updateFooColor: { data: [], version: 'v2', lastUpdatedFoo: mockedData.updateFooColor.response },
-  getStuff: { data: [] }
+  getStuff: { data: [] },
+  getOtherStuff: { data: [] }
 }
 
 const expectedFetcherArguments = {
-  getStuff: ['get', '/stuff/1'],
-  getFoos: ['get', '/foos'],
-  createFoo: ['post', '/foos', { name: 'test', color: 'testColor' }],
-  deleteFoo: ['delete', '/foos/4'],
-  updateFooColor: ['put', '/foos/5', { name: 'test', color: 'testColor' }],
-  getFooToken: ['get', '/token?access_token=asdf&client_id=653463']
+  getStuff: {
+    method: 'get',
+    url: '/stuff/1'
+  },
+  getOtherStuff: {
+    method: 'get',
+    url: '/otherStuff/11'
+  },
+  getFoos: {
+    method: 'get',
+    url: '/foos'
+  },
+  createFoo: {
+    method: 'post',
+    url: '/foos',
+    data: { name: 'test', color: 'testColor' }
+  },
+  deleteFoo: {
+    method: 'delete',
+    url: '/foos/4'
+  },
+  updateFooColor: {
+    method: 'put',
+    url: '/foos/5',
+    data: { name: 'test', color: 'testColor' }
+  },
+  getFooToken:  {
+    method: 'get',
+    url: '/token',
+    params: {
+      access_token: 'asdf',
+      client_id: '653463'
+    }
+  }
 }
 
 let store
 let httpClient = () => {}
-let apiMethods = ['get','post', 'put', 'delete']
 beforeEach(() => {
   const autoThunk = autoThunkMiddleware({ httpClient })
   store = createStore(combineReducers({ fooReducer }), {}, applyMiddleware(autoThunk))
@@ -83,6 +115,12 @@ const addFoo = data => ({ type: 'ADD_FOO', data })
 
 // Make a request without dispatching any action
 const getStuff = ({id}) => ['get', `/stuff/${id}`]
+const getOtherStuff = ({id}) => ({
+  request: {
+    method: 'get',
+    url: `/otherStuff/${id}`
+  }
+})
 
 // Make a request and dispatch an action with the returned data
 const getFoos = () => ({
@@ -109,25 +147,23 @@ const updateFooColor = ({ color, name, id }) => ({
   request: ['put', `/foos/${id}`, { color, name }]
 })
 
-it('should dispatch the given action passing the fetched data', () => {
+it('should handle a simple redux action', () => {
   store.dispatch(addFoo({ name: 'foo1', color: 'green' }))
   expect(store.getState().fooReducer).toEqual({ data: [{ name: 'foo1', color: 'green' }] })
 })
 
 /// /// Async actions ///////
-describe.each([getStuff, createFoo, deleteFoo, getFoos, updateFooColor])('Request', func => {
+describe.each([getStuff, getOtherStuff, getFoos, createFoo, deleteFoo, updateFooColor])('Request', func => {
   beforeEach(() => {
-    apiMethods.forEach(method => {
-      httpClient[method] = jest.fn(() => Promise.resolve({ data: mockedData[func.name].response }))
-    })
+    httpClient.request = jest.fn(() => Promise.resolve({ data: mockedData[func.name].response }))
   })
   afterEach(() => {
-    apiMethods.forEach(method => httpClient[method].mockRestore())
+    httpClient.request.mockRestore()
   })
 
   it('should dispatch the given action passing the fetched data', async () => {
     await store.dispatch(func(mockedData[func.name].params))
-    expect(httpClient[expectedFetcherArguments[func.name][0]]).toHaveBeenCalledWith(expectedFetcherArguments[func.name][1], expectedFetcherArguments[func.name][2])
+    expect(httpClient.request).toHaveBeenCalledWith(expectedFetcherArguments[func.name])
     expect(store.getState().fooReducer).toEqual(expectedReducerData[func.name])
   })
 })

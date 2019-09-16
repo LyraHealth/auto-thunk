@@ -33,22 +33,20 @@ const createThunk = (config, data) => {
 
   let requestParams = data.request
   if (Array.isArray(requestParams)) {
-    let body = requestParams[2]
-    if (body && data.bodyType === 'formData') {
-      let formData = new FormData()
-      Object.entries(body).map(([value, key]) => {
-        if (value !== undefined && value !== null) {
-          formData.append(key, value)
-        }
-      })
-      body = formData
-    }
-
     requestParams = {
       method: requestParams[0],
       url: requestParams[1],
-      data: body,
+      data: requestParams[2],
     }
+  }
+  if (requestParams.data && data.bodyType === 'formData') {
+    let formData = new FormData()
+    Object.entries(requestParams.data).map(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, value)
+      }
+    })
+    requestParams.data = formData
   }
 
   return async dispatch => {

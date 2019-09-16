@@ -33,8 +33,12 @@ const mockedData = {
     params: { id: '1' }
   },
   getOtherStuff: {
-    response: {name: 'myStuff'},
+    response: {name: 'myOtherStuff'},
     params: { id: '11' }
+  },
+  postSomeStuff:{
+    response: {name: 'someOtherStuff'},
+    params: { name: 'someStuff'}
   },
   getFoos: {
     response: [{ name: 'foo1', id: '1' }, { name: 'foo2', id: '2' }]
@@ -59,8 +63,12 @@ const expectedReducerData = {
   getFoos: { data: mockedData.getFoos.response },
   updateFooColor: { data: [], version: 'v2', lastUpdatedFoo: mockedData.updateFooColor.response },
   getStuff: { data: [] },
-  getOtherStuff: { data: [] }
+  getOtherStuff: { data: [] },
+  postSomeStuff: { data: [] }
 }
+
+const postSomeStuffData = new FormData()
+postSomeStuffData.append('name', 'someStuff')
 
 const expectedFetcherArguments = {
   getStuff: {
@@ -70,6 +78,11 @@ const expectedFetcherArguments = {
   getOtherStuff: {
     method: 'get',
     url: '/otherStuff/11'
+  },
+  postSomeStuff: {
+    method: 'post',
+    url: '/stuff',
+    data: postSomeStuffData
   },
   getFoos: {
     method: 'get',
@@ -121,6 +134,14 @@ const getOtherStuff = ({id}) => ({
     url: `/otherStuff/${id}`
   }
 })
+const postSomeStuff = ({name}) => ({
+  request: {
+    method: 'post',
+    url: `/stuff`,
+    data: { name }
+  },
+  bodyType: 'formData'
+})
 
 // Make a request and dispatch an action with the returned data
 const getFoos = () => ({
@@ -166,4 +187,13 @@ describe.each([getStuff, getOtherStuff, getFoos, createFoo, deleteFoo, updateFoo
     expect(httpClient.request).toHaveBeenCalledWith(expectedFetcherArguments[func.name])
     expect(store.getState().fooReducer).toEqual(expectedReducerData[func.name])
   })
+})
+
+it('should convert to form data if bodyType: `formData` is specified', async () => {
+  httpClient.request = jest.fn(() => Promise.resolve({ data: mockedData.postSomeStuff.response }))
+
+  await store.dispatch(postSomeStuff(mockedData.postSomeStuff.params))
+  expect(httpClient.request).toHaveBeenCalledWith(expectedFetcherArguments.postSomeStuff)
+
+  httpClient.request.mockRestore()
 })

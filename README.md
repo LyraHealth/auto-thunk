@@ -43,12 +43,14 @@ Note that since autoThunk is using promises, you need 'redux-promise-middleware'
 const getFoos = data => ({
   // Action as a string or an object or an array.
   action: <action>,
-  // Request parameters
+  // Request parameters (If an object is passed, it will be passed directly to the httpClient)
   request: ['<http client method>', '<endpoint>', <body>],
   // Log function will be called with '<identifier>' as the first argument, and the response/error as the second argument.
   log: '<identifier>',
   // Track function will be called with the given argument.
-  track: <track function argument>
+  track: <track function argument>,
+  // Automatically transform the body data to formData.
+  bodyType: 'formData',
   // Override the default error handler if needed
   errorHandler: error => { ... }
 })
@@ -64,7 +66,6 @@ export const getFoos = () => ({
   request: ['get', '/foos']
 })
 // Dispatched action ==> { type: 'ADD_FOOS', data: <response.data>}
-
 
 export const deleteFoo = ({ id }) => ({
   action: { type: 'DELETE_FOO', data: id },
@@ -93,6 +94,15 @@ export const createFoo = ({ name, color }) => ({
 })
 // Dispatched action ==> { type: 'ADD_FOO', data: <response.data>}
 
+// Using request as an object:
+const postSomeStuff = ({name, cancelToken}) => ({
+  request: {
+    method: 'post',
+    url: `/stuff`,
+    data: { name },
+    cancelToken
+  }
+})
 
 // Making requests without dispatching any action:
 export const getBars = () => ['get', '/bars']

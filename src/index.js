@@ -43,6 +43,9 @@ const createThunk = (config, data) => {
     let formData = new FormData()
     Object.entries(requestParams.data).map(([key, value]) => {
       if (value !== undefined && value !== null) {
+        if (typeof value === 'object') {
+          value = JSON.stringify(value)
+        }
         formData.append(key, value)
       }
     })

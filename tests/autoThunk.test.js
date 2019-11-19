@@ -38,7 +38,7 @@ const mockedData = {
   },
   postSomeStuff:{
     response: {name: 'someOtherStuff'},
-    params: { name: 'someStuff'}
+    params: { name: 'someStuff', foo: { foo1: 'hello'}, bar: ['item'], baz: undefined}
   },
   getFoos: {
     response: [{ name: 'foo1', id: '1' }, { name: 'foo2', id: '2' }]
@@ -69,6 +69,8 @@ const expectedReducerData = {
 
 const postSomeStuffData = new FormData()
 postSomeStuffData.append('name', 'someStuff')
+postSomeStuffData.append('foo', '{"foo1":"hello"}')
+postSomeStuffData.append('bar', '["item"]')
 
 const expectedFetcherArguments = {
   getStuff: {
@@ -134,11 +136,11 @@ const getOtherStuff = ({id}) => ({
     url: `/otherStuff/${id}`
   }
 })
-const postSomeStuff = ({name}) => ({
+const postSomeStuff = (data) => ({
   request: {
     method: 'post',
     url: `/stuff`,
-    data: { name }
+    data
   },
   bodyType: 'formData'
 })
@@ -191,9 +193,7 @@ describe.each([getStuff, getOtherStuff, getFoos, createFoo, deleteFoo, updateFoo
 
 it('should convert to form data if bodyType: `formData` is specified', async () => {
   httpClient.request = jest.fn(() => Promise.resolve({ data: mockedData.postSomeStuff.response }))
-
   await store.dispatch(postSomeStuff(mockedData.postSomeStuff.params))
   expect(httpClient.request).toHaveBeenCalledWith(expectedFetcherArguments.postSomeStuff)
-
   httpClient.request.mockRestore()
 })

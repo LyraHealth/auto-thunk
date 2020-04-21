@@ -1,5 +1,5 @@
 {
-  "name": "@lyrahealth-inc/auto-thunk",
+  "name": "auto-thunk",
   "version": "1.0.0",
   "license": "MIT",
   "description": "Enhanced thunk middleware for Redux.",
@@ -11,7 +11,7 @@
     "redux-middleware",
     "flux"
   ],
-  "author": "Yvan Gadeau (yvan.gadeau@gmail.com)",
+  "author": "Yvan Gadeau",
   "main": "src/index.js",
   "files": [
     "src"

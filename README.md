@@ -22,7 +22,6 @@ npm i --save auto-thunk
 
 ```js
 import autoThunkMiddleware from 'auto-thunk'
-import promise from 'redux-promise-middleware'
 
 const autoThunk = autoThunkMiddleware({
   httpClient: axios.create(),
@@ -31,10 +30,8 @@ const autoThunk = autoThunkMiddleware({
   track: <myTrackFunction>,
 })
 
-const store = createStore(<reducers>, <initialState>, applyMiddleware([promise(), autoThunk]))
+const store = createStore(<reducers>, <initialState>, applyMiddleware([autoThunk]))
 ```
-
-Note that since autoThunk is using promises, you need 'redux-promise-middleware' to be applied first.
 
 ### Write your action creators
 
@@ -57,16 +54,41 @@ const getFoos = data => ({
 ```
 
 #### Examples
+
+
+##### Basic example
+
 ```js
-// actions.js
-
-
 export const getFoos = () => ({
   action: 'ADD_FOOS',
   request: ['get', '/foos']
 })
-// Dispatched action ==> { type: 'ADD_FOOS', data: <response.data>}
+```
 
+The equivalent with `redux-thunk` alone would be:
+
+```js
+import httpClient from 'myHttpClientInstance'
+export const getFoos = async () => {
+  return (dispatch) => {
+    try {
+      const response = await httpClient.request({
+        method: 'get',
+        url: '/foos'
+      })
+      dispatch({
+        type: 'ADD_FOOS',
+        data: response.data
+      })
+    } catch (error) {
+      // some logic for error handling
+    }
+  }
+}
+```
+
+##### Other examples
+```js
 export const deleteFoo = ({ id }) => ({
   action: { type: 'DELETE_FOO', data: id },
   request: ['delete', `/foos/${id}`]

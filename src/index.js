@@ -80,6 +80,7 @@ const createThunk = (config, data) => {
       }
       const errorHandler = data.errorHandler ? data.errorHandler : config.errorHandler
       errorHandler(error, dispatch, data.action)
+      throw error
     }
   }
 }

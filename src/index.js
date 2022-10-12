@@ -98,6 +98,7 @@ export default function autoThunkMiddleware (config, extraArgument) {
     log: config.log || (() => {})
   }
   return ({ dispatch, getState, ...rest }) => next => action => {
+    if (!action) return
     action = createThunk(config, action)
     if (typeof action === 'function') {
       return action(dispatch, getState, extraArgument)

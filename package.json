@@ -1,5 +1,5 @@
 {
-  "name": "@lyrahealth-inc/auto-thunk",
+  "name": "auto-thunk",
   "version": "1.0.4",
   "license": "MIT",
   "description": "Enhanced thunk middleware for Redux.",
